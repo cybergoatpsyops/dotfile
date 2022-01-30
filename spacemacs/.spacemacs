@@ -32,7 +32,8 @@ This function should only modify configuration layer settings."
 
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
-   '(vimscript
+   '(python
+     vimscript
      yaml
      ;; ----------------------------------------------------------------
      ;; Example of useful layers you may want to use right away.
@@ -82,7 +83,10 @@ This function should only modify configuration layer settings."
    dotspacemacs-additional-packages
    '(
      (add-to-list 'load-path "/mnt/f/git/emacs-libvterm")
-     (require 'vterm))
+     (require 'vterm)
+     (forge :toggle t))
+
+
 
 
    ;; A list of packages that cannot be updated.
@@ -620,6 +624,11 @@ dump.")
   ;; Hiding markup elements in org-mode
   (setq org-hide-emphasis-markers t)
 
+  ;; Magit Repository list
+  (setq magit-repository-directories
+        '(("/mnt/f/git/" . 2)))
+
+
  ;; global git commit mod(custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -655,9 +664,9 @@ This function is called at the very end of Spacemacs initialization."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(org-agenda-files
-   '("/home/cybergoat/org-roam/20220108201301-improve_writing.org" "/home/cybergoat/org-roam/20220106211836-zettelkasten.org" "/home/cybergoat/org-roam/20220107140316-virtu.org" "/home/cybergoat/org-roam/20220106131236-work_index.org" "/home/cybergoat/org-roam/20220101183514-january22fleetingnotes.org" "/home/cybergoat/org-roam/20211223040023-main.org" "/home/cybergoat/org-roam/20211223145815-kn_king_c_programming_a_modern_approach.org" "/home/cybergoat/org-roam/20211223182901-6_1_the_while_statement.org" "/home/cybergoat/org-roam/20211224145020-decemberfleetingnotes.org" "/home/cybergoat/org-roam/20211224163337-6_2_the_do_statement.org"))
+   '("/home/cybergoat/org-roam/20220106211836-zettelkasten.org" "/home/cybergoat/org-roam/20220107103540-training_index.org" "/home/cybergoat/org-roam/20220106131236-work_index.org" "/home/cybergoat/org-roam/20220108201301-improve_writing.org" "/home/cybergoat/org-roam/20220110163138-liquid_power.org" "/home/cybergoat/org-roam/20220107140316-virtu.org" "/home/cybergoat/org-roam/20220101183514-january22fleetingnotes.org" "/home/cybergoat/org-roam/20211223040023-main.org" "/home/cybergoat/org-roam/20211223145815-kn_king_c_programming_a_modern_approach.org" "/home/cybergoat/org-roam/20211223182901-6_1_the_while_statement.org" "/home/cybergoat/org-roam/20211224145020-decemberfleetingnotes.org" "/home/cybergoat/org-roam/20211224163337-6_2_the_do_statement.org"))
  '(package-selected-packages
-   '(wgrep vertico-repeat vertico-quick vertico-directory vertico orderless marginalia flyspell-correct-popup embark-consult embark consult-yasnippet consult helpful elisp-refs centaur-tabs vimrc-mode helm-gtags ggtags dactyl-mode counsel-gtags counsel swiper ivy dap-mode bui yasnippet-snippets yaml-mode xterm-color ws-butler writeroom-mode winum which-key vterm volatile-highlights vi-tilde-fringe uuidgen use-package unfill undo-tree treemacs-projectile treemacs-persp treemacs-magit treemacs-icons-dired treemacs-evil toc-org texfrag terminal-here symon symbol-overlay string-inflection string-edit spaceline-all-the-icons smeargle shell-pop restart-emacs rainbow-delimiters quickrun popwin pcre2el password-generator paradox overseer orgit-forge org-superstar org-roam org-rich-yank org-projectile org-present org-pomodoro org-mime org-download org-contrib org-cliplink open-junk-file nameless mwim multi-term multi-line mmm-mode markdown-toc macrostep lsp-ui lsp-treemacs lsp-origami lorem-ipsum link-hint inspector info+ indent-guide hybrid-mode hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers highlight-indentation helm-xref helm-themes helm-swoop helm-rtags helm-purpose helm-projectile helm-org-rifle helm-org helm-mode-manager helm-make helm-lsp helm-ls-git helm-git-grep helm-flx helm-descbinds helm-company helm-c-yasnippet helm-ag google-translate google-c-style golden-ratio gnuplot gitignore-templates git-timemachine git-modes git-messenger git-link git-gutter-fringe gh-md gendoxy fuzzy font-lock+ flyspell-correct-helm flycheck-ycmd flycheck-rtags flycheck-pos-tip flycheck-package flycheck-elsa flx-ido fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-textobj-line evil-surround evil-org evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-easymotion evil-collection evil-cleverparens evil-args evil-anzu eval-sexp-fu eshell-z eshell-prompt-extras esh-help emr elisp-slime-nav editorconfig dumb-jump drag-stuff dotenv-mode disaster dired-quick-sort diminish deft define-word cpp-auto-include company-ycmd company-rtags company-c-headers column-enforce-mode clean-aindent-mode centered-cursor-mode ccls browse-at-remote auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile aggressive-indent ace-link ace-jump-helm-line ac-ispell)))
+   '(yapfify stickyfunc-enhance sphinx-doc pytest pyenv-mode pydoc py-isort poetry pippel pipenv pyvenv pip-requirements nose lsp-python-ms lsp-pyright live-py-mode importmagic epc ctable concurrent helm-pydoc helm-cscope helm xcscope helm-core cython-mode company-anaconda blacken anaconda-mode pythonic wgrep vertico-repeat vertico-quick vertico-directory vertico orderless marginalia flyspell-correct-popup embark-consult embark consult-yasnippet consult helpful elisp-refs centaur-tabs vimrc-mode helm-gtags ggtags dactyl-mode counsel-gtags counsel swiper ivy dap-mode bui yasnippet-snippets yaml-mode xterm-color ws-butler writeroom-mode winum which-key vterm volatile-highlights vi-tilde-fringe uuidgen use-package unfill undo-tree treemacs-projectile treemacs-persp treemacs-magit treemacs-icons-dired treemacs-evil toc-org texfrag terminal-here symon symbol-overlay string-inflection string-edit spaceline-all-the-icons smeargle shell-pop restart-emacs rainbow-delimiters quickrun popwin pcre2el password-generator paradox overseer orgit-forge org-superstar org-roam org-rich-yank org-projectile org-present org-pomodoro org-mime org-download org-contrib org-cliplink open-junk-file nameless mwim multi-term multi-line mmm-mode markdown-toc macrostep lsp-ui lsp-treemacs lsp-origami lorem-ipsum link-hint inspector info+ indent-guide hybrid-mode hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers highlight-indentation helm-xref helm-themes helm-swoop helm-rtags helm-purpose helm-projectile helm-org-rifle helm-org helm-mode-manager helm-make helm-lsp helm-ls-git helm-git-grep helm-flx helm-descbinds helm-company helm-c-yasnippet helm-ag google-translate google-c-style golden-ratio gnuplot gitignore-templates git-timemachine git-modes git-messenger git-link git-gutter-fringe gh-md gendoxy fuzzy font-lock+ flyspell-correct-helm flycheck-ycmd flycheck-rtags flycheck-pos-tip flycheck-package flycheck-elsa flx-ido fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-textobj-line evil-surround evil-org evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-easymotion evil-collection evil-cleverparens evil-args evil-anzu eval-sexp-fu eshell-z eshell-prompt-extras esh-help emr elisp-slime-nav editorconfig dumb-jump drag-stuff dotenv-mode disaster dired-quick-sort diminish deft define-word cpp-auto-include company-ycmd company-rtags company-c-headers column-enforce-mode clean-aindent-mode centered-cursor-mode ccls browse-at-remote auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile aggressive-indent ace-link ace-jump-helm-line ac-ispell)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
