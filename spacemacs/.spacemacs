@@ -628,6 +628,8 @@ dump.")
   (setq magit-repository-directories
         '(("/mnt/f/git/" . 2)))
 
+  ;; vterm buffer
+  (setq vterm-max-scrollback 99999999999)
 
  ;; global git commit mod(custom-set-variables
  ;; custom-set-variables was added by Custom.
