@@ -260,3 +260,9 @@ vterm_printf(){
         printf "\e]%s\e\\" "$1"
     fi
 }
+
+# Generated for envman. Do not edit.
+[ -s "$HOME/.config/envman/load.sh" ] && source "$HOME/.config/envman/load.sh"
+
+# zoxide startup
+eval "$(zoxide init bash)"

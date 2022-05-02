@@ -32,7 +32,11 @@ This function should only modify configuration layer settings."
 
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
-   '(python
+   '(javascript
+     html
+     lua
+     windows-scripts
+     python
      vimscript
      yaml
      ;; ----------------------------------------------------------------
@@ -52,11 +56,20 @@ This function should only modify configuration layer settings."
      (xclipboard :variables xclipboard-copy-command "clip.exe")
      (xclipboard :variables xclipboard-paste-command "clip.exe")
      git
+     helm
      compleseus
      lsp
      markdown
+     unicode-fonts
      multiple-cursors
      org
+     latex
+     bibtex
+     (bibtex :variables
+             bibtex-enable-ebib-support t
+             ebib-preload-bib-files '("/mnt/d/bibFiles/references.bib")
+             ebib-file-search-dirs '("/mnt/d/books/")
+             ebib-import-directory "/mnt/d/bibFiles/")
      eww
      shell
      (org :variables org-enable-roam-support t)
@@ -84,6 +97,8 @@ This function should only modify configuration layer settings."
    '(
      (add-to-list 'load-path "/mnt/f/git/emacs-libvterm")
      (require 'vterm)
+     (add-to-list 'load-path "/mnt/f/git/yara-mode")
+     (require 'yara-mode)
      (forge :toggle t))
 
 
@@ -534,7 +549,10 @@ It should only modify the values of Spacemacs settings."
    dotspacemacs-home-shorten-agenda-source nil
 
    ;; If non-nil then byte-compile some of Spacemacs files.
-   dotspacemacs-byte-compile nil))
+   dotspacemacs-byte-compile nil
+
+   ;; Show all the icons
+   dotspacemacs-startup-buffer-show-icons t))
 
 (defun dotspacemacs/user-env ()
   "Environment variables setup.
@@ -616,6 +634,7 @@ dump.")
   (setq org-mobile-directory "/scp:xxkaliboyx@bob-diner:/volume1/emacs/")
   (setq org-directory "~/org-roam")
   (setq org-mobile-files '("~/org-roam"))
+  (setq org-default-notes-file (concat org-directory "/notes.org"))
 
   ;; git commit config
   (require 'git-commit)
@@ -630,6 +649,14 @@ dump.")
 
   ;; vterm buffer
   (setq vterm-max-scrollback 99999999999)
+
+  ;; BibTex config
+  (setq bibtex-completion-bibliography '("/mnt/d/bibFiles/references.bib")
+        bibtex-completion-library-path "/mnt/d/bibFiles/"
+        bibtex-completion-notes-path "/mnt/d/bibFiles/notes.org")
+
+  ;; Custom Keybinding
+  (define-key evil-insert-state-map (kbd "C-e") 'evil-normal-state)
 
  ;; global git commit mod(custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -668,11 +695,13 @@ This function is called at the very end of Spacemacs initialization."
  '(org-agenda-files
    '("/home/cybergoat/org-roam/20220106211836-zettelkasten.org" "/home/cybergoat/org-roam/20220107103540-training_index.org" "/home/cybergoat/org-roam/20220106131236-work_index.org" "/home/cybergoat/org-roam/20220108201301-improve_writing.org" "/home/cybergoat/org-roam/20220110163138-liquid_power.org" "/home/cybergoat/org-roam/20220107140316-virtu.org" "/home/cybergoat/org-roam/20220101183514-january22fleetingnotes.org" "/home/cybergoat/org-roam/20211223040023-main.org" "/home/cybergoat/org-roam/20211223145815-kn_king_c_programming_a_modern_approach.org" "/home/cybergoat/org-roam/20211223182901-6_1_the_while_statement.org" "/home/cybergoat/org-roam/20211224145020-decemberfleetingnotes.org" "/home/cybergoat/org-roam/20211224163337-6_2_the_do_statement.org"))
  '(package-selected-packages
-   '(yapfify stickyfunc-enhance sphinx-doc pytest pyenv-mode pydoc py-isort poetry pippel pipenv pyvenv pip-requirements nose lsp-python-ms lsp-pyright live-py-mode importmagic epc ctable concurrent helm-pydoc helm-cscope helm xcscope helm-core cython-mode company-anaconda blacken anaconda-mode pythonic wgrep vertico-repeat vertico-quick vertico-directory vertico orderless marginalia flyspell-correct-popup embark-consult embark consult-yasnippet consult helpful elisp-refs centaur-tabs vimrc-mode helm-gtags ggtags dactyl-mode counsel-gtags counsel swiper ivy dap-mode bui yasnippet-snippets yaml-mode xterm-color ws-butler writeroom-mode winum which-key vterm volatile-highlights vi-tilde-fringe uuidgen use-package unfill undo-tree treemacs-projectile treemacs-persp treemacs-magit treemacs-icons-dired treemacs-evil toc-org texfrag terminal-here symon symbol-overlay string-inflection string-edit spaceline-all-the-icons smeargle shell-pop restart-emacs rainbow-delimiters quickrun popwin pcre2el password-generator paradox overseer orgit-forge org-superstar org-roam org-rich-yank org-projectile org-present org-pomodoro org-mime org-download org-contrib org-cliplink open-junk-file nameless mwim multi-term multi-line mmm-mode markdown-toc macrostep lsp-ui lsp-treemacs lsp-origami lorem-ipsum link-hint inspector info+ indent-guide hybrid-mode hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers highlight-indentation helm-xref helm-themes helm-swoop helm-rtags helm-purpose helm-projectile helm-org-rifle helm-org helm-mode-manager helm-make helm-lsp helm-ls-git helm-git-grep helm-flx helm-descbinds helm-company helm-c-yasnippet helm-ag google-translate google-c-style golden-ratio gnuplot gitignore-templates git-timemachine git-modes git-messenger git-link git-gutter-fringe gh-md gendoxy fuzzy font-lock+ flyspell-correct-helm flycheck-ycmd flycheck-rtags flycheck-pos-tip flycheck-package flycheck-elsa flx-ido fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-textobj-line evil-surround evil-org evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-easymotion evil-collection evil-cleverparens evil-args evil-anzu eval-sexp-fu eshell-z eshell-prompt-extras esh-help emr elisp-slime-nav editorconfig dumb-jump drag-stuff dotenv-mode disaster dired-quick-sort diminish deft define-word cpp-auto-include company-ycmd company-rtags company-c-headers column-enforce-mode clean-aindent-mode centered-cursor-mode ccls browse-at-remote auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile aggressive-indent ace-link ace-jump-helm-line ac-ispell)))
+   '(unicode-fonts ucs-utils font-utils persistent-soft pcache lsp-latex company-reftex company-math math-symbol-lists company-auctex ebib org-ref citeproc bibtex-completion parsebib biblio biblio-core tern npm-mode nodejs-repl livid-mode skewer-mode js2-refactor multiple-cursors js2-mode js-doc import-js grizzl web-mode web-beautify tagedit slim-mode scss-mode sass-mode pug-mode prettier-js impatient-mode simple-httpd helm-css-scss haml-mode emmet-mode counsel-css company-web web-completion-data add-node-modules-path company-lua lua-mode powershell bmx-mode yapfify stickyfunc-enhance sphinx-doc pytest pyenv-mode pydoc py-isort poetry pippel pipenv pyvenv pip-requirements nose lsp-python-ms lsp-pyright live-py-mode importmagic epc ctable concurrent helm-pydoc helm-cscope helm xcscope helm-core cython-mode company-anaconda blacken anaconda-mode pythonic wgrep vertico-repeat vertico-quick vertico-directory vertico orderless marginalia flyspell-correct-popup embark-consult embark consult-yasnippet consult helpful elisp-refs centaur-tabs vimrc-mode helm-gtags ggtags dactyl-mode counsel-gtags counsel swiper ivy dap-mode bui yasnippet-snippets yaml-mode xterm-color ws-butler writeroom-mode winum which-key vterm volatile-highlights vi-tilde-fringe uuidgen use-package unfill undo-tree treemacs-projectile treemacs-persp treemacs-magit treemacs-icons-dired treemacs-evil toc-org texfrag terminal-here symon symbol-overlay string-inflection string-edit spaceline-all-the-icons smeargle shell-pop restart-emacs rainbow-delimiters quickrun popwin pcre2el password-generator paradox overseer orgit-forge org-superstar org-roam org-rich-yank org-projectile org-present org-pomodoro org-mime org-download org-contrib org-cliplink open-junk-file nameless mwim multi-term multi-line mmm-mode markdown-toc macrostep lsp-ui lsp-treemacs lsp-origami lorem-ipsum link-hint inspector info+ indent-guide hybrid-mode hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers highlight-indentation helm-xref helm-themes helm-swoop helm-rtags helm-purpose helm-projectile helm-org-rifle helm-org helm-mode-manager helm-make helm-lsp helm-ls-git helm-git-grep helm-flx helm-descbinds helm-company helm-c-yasnippet helm-ag google-translate google-c-style golden-ratio gnuplot gitignore-templates git-timemachine git-modes git-messenger git-link git-gutter-fringe gh-md gendoxy fuzzy font-lock+ flyspell-correct-helm flycheck-ycmd flycheck-rtags flycheck-pos-tip flycheck-package flycheck-elsa flx-ido fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-textobj-line evil-surround evil-org evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-easymotion evil-collection evil-cleverparens evil-args evil-anzu eval-sexp-fu eshell-z eshell-prompt-extras esh-help emr elisp-slime-nav editorconfig dumb-jump drag-stuff dotenv-mode disaster dired-quick-sort diminish deft define-word cpp-auto-include company-ycmd company-rtags company-c-headers column-enforce-mode clean-aindent-mode centered-cursor-mode ccls browse-at-remote auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile aggressive-indent ace-link ace-jump-helm-line ac-ispell)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(italic ((t (:slant italic :weight normal)))))
+ '(bold ((t (:weight ultra-heavy))))
+ '(highlight-parentheses-highlight ((nil (:weight ultra-bold))) t)
+ '(italic ((t (:slant italic :weight semi-light)))))
 )
