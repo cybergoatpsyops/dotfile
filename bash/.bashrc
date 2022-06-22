@@ -275,3 +275,17 @@ bind -m vi-insert 'Control-l: clear-screen'
 set show-mode-in-prompt on
 set vi-cmd-mode-string "\1\e[2 q\2"
 set vi-ins-mode-string "\1\e[6 q\2"
+. "$HOME/.cargo/env"
+
+# Bash case insensitive completion
+bind -s 'set completion-ignore-case on'
+
+# batpipe config
+LESSOPEN="|/home/linuxbrew/.linuxbrew/Cellar/bat-extras-batpipe/2021.04.06/bin/batpipe %s";
+export LESSOPEN;
+unset LESSCLOSE;
+
+LESS="$LESS -R";
+BATPIPE="color";
+export LESS;
+export BATPIPE;

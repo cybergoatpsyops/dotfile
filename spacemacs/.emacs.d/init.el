@@ -110,3 +110,5 @@
 (setq org-hide-leading-stars nil)
 (setq org-superstar-leading-bullet ?\s)
 
+;; enable menu-bar
+(menu-bar-mode 1)
