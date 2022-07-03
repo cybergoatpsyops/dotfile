@@ -111,4 +111,4 @@
 (setq org-superstar-leading-bullet ?\s)
 
 ;; enable menu-bar
-(menu-bar-mode 1)
+;;(menu-bar-mode 1)
