@@ -1,6 +1,6 @@
 ;;; init.el --- Spacemacs Initialization File -*- no-byte-compile: t -*-
 ;;
-;; Copyright (c) 2012-2021 Sylvain Benner & Contributors
+;; Copyright (c) 2012-2022 Sylvain Benner & Contributors
 ;;
 ;; Author: Sylvain Benner <sylvain.benner@gmail.com>
 ;; URL: https://github.com/syl20bnr/spacemacs
@@ -42,8 +42,8 @@
       nil (not init-file-debug))
 (load spacemacs--last-emacs-version-file t (not init-file-debug))
 (when (or (not (string= spacemacs--last-emacs-version emacs-version))
-          (spacemacs//dir-contains-stale-byte-compiled-files-p
-           spacemacs-core-directory))
+          (> 0 (spacemacs//dir-byte-compile-state
+                (concat spacemacs-core-directory "libs/"))))
   (spacemacs//remove-byte-compiled-files-in-dir spacemacs-core-directory))
 ;; Update saved Emacs version.
 (unless (string= spacemacs--last-emacs-version emacs-version)
@@ -53,8 +53,12 @@
     (error (concat "Your version of Emacs (%s) is too old. "
                    "Spacemacs requires Emacs version %s or above.")
            emacs-version spacemacs-emacs-min-version)
-  ;; Disable file-name-handlers for a speed boost during init
-  (let ((file-name-handler-alist nil))
+  ;; Disabling file-name-handlers for a speed boost during init might seem like
+  ;; a good idea but it causes issues like
+  ;; https://github.com/syl20bnr/spacemacs/issues/11585 "Symbol's value as
+  ;; variable is void: \213" when emacs is not built having:
+  ;; `--without-compress-install`
+  (let ((please-do-not-disable-file-name-handler-alist nil))
     (require 'core-spacemacs)
     (spacemacs/dump-restore-load-path)
     (configuration-layer/load-lock-file)
@@ -71,7 +75,6 @@
       (unless (server-running-p)
         (message "Starting a server...")
         (server-start)))))
-
 ;; Add copy paste for emacs, wsl and win apps
 ; wsl-copy
 (defun wsl-copy (start end)
@@ -97,10 +100,6 @@
 (global-set-key
  (kbd "C-c C-v")
  'wsl-paste)
-
-;; vterm local package
-(add-to-list 'load-path "/mnt/f/git/emacs-libvterm")
-(require 'vterm)
 
 ;; yara-mode local package
 (add-to-list 'load-path "/mnt/f/git/yara-mode")
