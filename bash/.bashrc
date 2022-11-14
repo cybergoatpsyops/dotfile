@@ -305,3 +305,5 @@ fi
 unset __conda_setup
 # <<< conda initialize <<<
 
+# User Env Vars
+export PATH=$PATH:/home/cybergoat/scripts

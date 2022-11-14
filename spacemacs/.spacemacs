@@ -45,7 +45,6 @@ This function should only modify configuration layer settings."
      ;; Uncomment some layer names and press `SPC f e R' (Vim style) or
      ;; `M-m f e R' (Emacs style) to install them.
      ;; ----------------------------------------------------------------
-     auto-completion
      better-defaults
      c-c++
      (c-c++ :variables
@@ -59,9 +58,9 @@ This function should only modify configuration layer settings."
      git
      pandoc
      python
-     helm
      compleseus
      tree-sitter
+     templates
      lsp
      markdown
      unicode-fonts
@@ -106,6 +105,13 @@ This function should only modify configuration layer settings."
      (require 'vterm)
      (add-to-list 'load-path "/mnt/f/git/yara-mode")
      (require 'yara-mode)
+     (corfu
+      :repo "minad/corfu"
+      :fetcher github
+      :files ("src/*.el" "extensions"))
+     (cape
+      :repo "minad/cape"
+      :fetcher github)
      ;;(use-package doom-themes
        ;;:ensure t
        ;;:config
@@ -131,7 +137,8 @@ This function should only modify configuration layer settings."
    dotspacemacs-frozen-packages '()
 
    ;; A list of packages that will not be installed and loaded.
-   dotspacemacs-excluded-packages '()
+   dotspacemacs-excluded-packages
+   '(company)
 
    ;; Defines the behaviour of Spacemacs when installing packages.
    ;; Possible values are `used-only', `used-but-keep-unused' and `all'.
@@ -623,6 +630,100 @@ dump.")
   (setq deft-directory "~/org-roam/")
   (setq deft-extensions '("org" "md" "text" "wiki"))
 
+  ;; Add Babel Languages
+  (org-babel-do-load-languages 'org-babel-load-languages
+                               '((awk   . t)
+                                 (shell . t)))
+
+  ;; Add corfu package
+  ;; Auto completion example
+  (use-package corfu
+  :custom
+  ;; Optional customization's
+  (corfu-cycle t)                ;; Enable cycling for `corfu-next/previous'
+  (corfu-auto t)                 ;; Enable auto completion
+  (corfu-auto-prifix 0.14)
+  (corfu-auto-delay 0.0)
+  (corfu-preview-current 'insert)    ;; Disable current candidate preview
+  (corfu-preselect-first nil)    ;; Disable candidate preselection
+  (corfu-on-exact-match nil)     ;; Configure handling of exact matches
+  (corfu-echo-documentation 0.25) ;; Disable documentation in the echo area
+  (corfu-scroll-margin 5)
+  ;; (corfu-separator ?_) ;; Set to orderless separator, if not using space
+  :bind
+  ;; Another key binding can be used, such as S-SPC.
+  (:map corfu-map
+        ("C-SPC"       . corfu-insert-separator)
+        ;;("TAB"         . corfu-next)
+        ;;([tab]         . corfu-next)
+        ;;("S-TAB"       . corfu.previous)
+        ;;([backtab]     . corfu-previous)
+        ;;("S-<return>"  . corfu-insert)
+        ;;("RET"         . nil)
+        )
+  :init
+  (global-corfu-mode)
+  (corfu-history-mode)
+  :config
+  (setq tab-always-indent 'complete)
+  (add-hook 'eshell-mode-hook
+            (lambda () (setq-local corfu-quit-at-boundary t
+                                   corfu-quit-no-match t
+                                   corfu-auto nil)
+              (corfu-mode))))
+;; A few more useful configurations...
+(use-package emacs
+  :init
+  ;; TAB cycle if there are only few candidates
+  (setq completion-cycle-threshold 3)
+
+  ;; Emacs 28: Hide commands in M-x which do not apply to the current mode.
+  ;; Corfu commands are hidden, since they are not supposed to be used via M-x.
+  ;; (setq read-extended-command-predicate
+  ;;       #'command-completion-default-include-p)
+
+  ;; Enable indentation+completion using the TAB key.
+  ;; `completion-at-point' is often bound to M-TAB.
+  (setq tab-always-indent 'complete))
+;; Enable Corfu completion UI
+;; See the Corfu README for more configuration tips.
+
+;; Add extensions
+(use-package cape
+  ;; Bind dedicated completion commands
+  ;; Alternative prefix keys: C-c p, M-p, M-+, ...
+  :bind (("C-c p p" . completion-at-point) ;; capf
+         ("C-c p t" . complete-tag)        ;; etags
+         ("C-c p d" . cape-dabbrev)        ;; or dabbrev-completion
+         ("C-c p h" . cape-history)
+         ("C-c p f" . cape-file)
+         ("C-c p k" . cape-keyword)
+         ("C-c p s" . cape-symbol)
+         ("C-c p a" . cape-abbrev)
+         ("C-c p i" . cape-ispell)
+         ("C-c p l" . cape-line)
+         ("C-c p w" . cape-dict)
+         ("C-c p \\" . cape-tex)
+         ("C-c p _" . cape-tex)
+         ("C-c p ^" . cape-tex)
+         ("C-c p &" . cape-sgml)
+         ("C-c p r" . cape-rfc1345))
+  :init
+  ;; Add `completion-at-point-functions', used by `completion-at-point'.
+  (add-to-list 'completion-at-point-functions #'cape-dabbrev)
+  (add-to-list 'completion-at-point-functions #'cape-file)
+  (add-to-list 'completion-at-point-functions #'cape-history)
+  (add-to-list 'completion-at-point-functions #'cape-keyword)
+  ;;(add-to-list 'completion-at-point-functions #'cape-tex)
+  ;;(add-to-list 'completion-at-point-functions #'cape-sgml)
+  ;;(add-to-list 'completion-at-point-functions #'cape-rfc1345)
+  ;;(add-to-list 'completion-at-point-functions #'cape-abbrev)
+  ;;(add-to-list 'completion-at-point-functions #'cape-ispell)
+  ;;(add-to-list 'completion-at-point-functions #'cape-dict)
+  ;;(add-to-list 'completion-at-point-functions #'cape-symbol)
+  ;;(add-to-list 'completion-at-point-functions #'cape-line)
+)
+
   ;; Hide whitespace dots
   (setq org-hide-leading-stars nil)
   (setq org-superstar-leading-bullet ?\s)
@@ -724,11 +825,12 @@ This function is called at the very end of Spacemacs initialization."
  '(display-time-mode t)
  '(global-display-line-numbers-mode t)
  '(global-linum-mode nil)
+ '(lsp-completion-enable t)
  '(menu-bar-mode nil)
  '(org-agenda-files
    '("~/org-roam/20220605135603-june_2022.org" "/home/cybergoat/org-roam/20220514182848-may_2022.org" "/home/cybergoat/org-roam/20220106211836-zettelkasten.org" "/home/cybergoat/org-roam/20220107103540-training_index.org" "/home/cybergoat/org-roam/20220106131236-work_index.org" "/home/cybergoat/org-roam/20220108201301-improve_writing.org" "/home/cybergoat/org-roam/20220110163138-liquid_power.org" "/home/cybergoat/org-roam/20220107140316-virtu.org" "/home/cybergoat/org-roam/20220101183514-january22fleetingnotes.org" "/home/cybergoat/org-roam/20211223040023-main.org" "/home/cybergoat/org-roam/20211223145815-kn_king_c_programming_a_modern_approach.org" "/home/cybergoat/org-roam/20211223182901-6_1_the_while_statement.org" "/home/cybergoat/org-roam/20211224145020-decemberfleetingnotes.org" "/home/cybergoat/org-roam/20211224163337-6_2_the_do_statement.org"))
  '(package-selected-packages
-   '(csv-mode tree-sitter-langs tree-sitter tsc pandoc-mode zonokai-emacs zenburn-theme zen-and-art-theme white-sand-theme underwater-theme ujelly-theme twilight-theme twilight-bright-theme twilight-anti-bright-theme toxi-theme tao-theme tangotango-theme tango-plus-theme tango-2-theme sunny-day-theme sublime-themes subatomic256-theme subatomic-theme spacegray-theme soothe-theme solarized-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme seti-theme reverse-theme rebecca-theme railscasts-theme purple-haze-theme professional-theme planet-theme phoenix-dark-pink-theme phoenix-dark-mono-theme organic-green-theme omtose-phellack-theme oldlace-theme occidental-theme obsidian-theme noctilux-theme naquadah-theme mustang-theme monokai-theme monochrome-theme molokai-theme moe-theme modus-themes minimal-theme material-theme majapahit-theme madhat2r-theme lush-theme light-soap-theme kaolin-themes jbeans-theme jazz-theme ir-black-theme inkpot-theme heroku-theme hemisu-theme hc-zenburn-theme gruvbox-theme gruber-darker-theme grandshell-theme gotham-theme gandalf-theme flatui-theme flatland-theme farmhouse-theme eziam-theme exotica-theme espresso-theme dracula-theme doom-themes django-theme darktooth-theme darkokai-theme darkmine-theme darkburn-theme dakrone-theme cyberpunk-theme color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized clues-theme chocolate-theme autothemer cherry-blossom-theme busybee-theme bubbleberry-theme birds-of-paradise-plus-theme badwolf-theme apropospriate-theme anti-zenburn-theme ample-zen-theme ample-theme alect-themes afternoon-theme unicode-fonts ucs-utils font-utils persistent-soft pcache lsp-latex company-reftex company-math math-symbol-lists company-auctex ebib org-ref citeproc bibtex-completion parsebib biblio biblio-core tern npm-mode nodejs-repl livid-mode skewer-mode js2-refactor multiple-cursors js2-mode js-doc import-js grizzl web-mode web-beautify tagedit slim-mode scss-mode sass-mode pug-mode prettier-js impatient-mode simple-httpd helm-css-scss haml-mode emmet-mode counsel-css company-web web-completion-data add-node-modules-path company-lua lua-mode powershell bmx-mode yapfify stickyfunc-enhance sphinx-doc pytest pyenv-mode pydoc py-isort poetry pippel pipenv pyvenv pip-requirements nose lsp-python-ms lsp-pyright live-py-mode importmagic epc ctable concurrent helm-pydoc helm-cscope helm xcscope helm-core cython-mode company-anaconda blacken anaconda-mode pythonic wgrep vertico-repeat vertico-quick vertico-directory vertico orderless marginalia flyspell-correct-popup embark-consult embark consult-yasnippet consult helpful elisp-refs centaur-tabs vimrc-mode helm-gtags ggtags dactyl-mode counsel-gtags counsel swiper ivy dap-mode bui yasnippet-snippets yaml-mode xterm-color ws-butler writeroom-mode winum which-key vterm volatile-highlights vi-tilde-fringe uuidgen use-package unfill undo-tree treemacs-projectile treemacs-persp treemacs-magit treemacs-icons-dired treemacs-evil toc-org texfrag terminal-here symon symbol-overlay string-inflection string-edit spaceline-all-the-icons smeargle shell-pop restart-emacs rainbow-delimiters quickrun popwin pcre2el password-generator paradox overseer orgit-forge org-superstar org-roam org-rich-yank org-projectile org-present org-pomodoro org-mime org-download org-contrib org-cliplink open-junk-file nameless mwim multi-term multi-line mmm-mode markdown-toc macrostep lsp-ui lsp-treemacs lsp-origami lorem-ipsum link-hint inspector info+ indent-guide hybrid-mode hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers highlight-indentation helm-xref helm-themes helm-swoop helm-rtags helm-purpose helm-projectile helm-org-rifle helm-org helm-mode-manager helm-make helm-lsp helm-ls-git helm-git-grep helm-flx helm-descbinds helm-company helm-c-yasnippet helm-ag google-translate google-c-style golden-ratio gnuplot gitignore-templates git-timemachine git-modes git-messenger git-link git-gutter-fringe gh-md gendoxy fuzzy font-lock+ flyspell-correct-helm flycheck-ycmd flycheck-rtags flycheck-pos-tip flycheck-package flycheck-elsa flx-ido fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-textobj-line evil-surround evil-org evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-easymotion evil-collection evil-cleverparens evil-args evil-anzu eval-sexp-fu eshell-z eshell-prompt-extras esh-help emr elisp-slime-nav editorconfig dumb-jump drag-stuff dotenv-mode disaster dired-quick-sort diminish deft define-word cpp-auto-include company-ycmd company-rtags company-c-headers column-enforce-mode clean-aindent-mode centered-cursor-mode ccls browse-at-remote auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile aggressive-indent ace-link ace-jump-helm-line ac-ispell))
+   '(cape corfu yatemplate lsp-docker csv-mode tree-sitter-langs tree-sitter tsc pandoc-mode zonokai-emacs zenburn-theme zen-and-art-theme white-sand-theme underwater-theme ujelly-theme twilight-theme twilight-bright-theme twilight-anti-bright-theme toxi-theme tao-theme tangotango-theme tango-plus-theme tango-2-theme sunny-day-theme sublime-themes subatomic256-theme subatomic-theme spacegray-theme soothe-theme solarized-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme seti-theme reverse-theme rebecca-theme railscasts-theme purple-haze-theme professional-theme planet-theme phoenix-dark-pink-theme phoenix-dark-mono-theme organic-green-theme omtose-phellack-theme oldlace-theme occidental-theme obsidian-theme noctilux-theme naquadah-theme mustang-theme monokai-theme monochrome-theme molokai-theme moe-theme modus-themes minimal-theme material-theme majapahit-theme madhat2r-theme lush-theme light-soap-theme kaolin-themes jbeans-theme jazz-theme ir-black-theme inkpot-theme heroku-theme hemisu-theme hc-zenburn-theme gruvbox-theme gruber-darker-theme grandshell-theme gotham-theme gandalf-theme flatui-theme flatland-theme farmhouse-theme eziam-theme exotica-theme espresso-theme dracula-theme doom-themes django-theme darktooth-theme darkokai-theme darkmine-theme darkburn-theme dakrone-theme cyberpunk-theme color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized clues-theme chocolate-theme autothemer cherry-blossom-theme busybee-theme bubbleberry-theme birds-of-paradise-plus-theme badwolf-theme apropospriate-theme anti-zenburn-theme ample-zen-theme ample-theme alect-themes afternoon-theme unicode-fonts ucs-utils font-utils persistent-soft pcache lsp-latex company-reftex company-math math-symbol-lists company-auctex ebib org-ref citeproc bibtex-completion parsebib biblio biblio-core tern npm-mode nodejs-repl livid-mode skewer-mode js2-refactor multiple-cursors js2-mode js-doc import-js grizzl web-mode web-beautify tagedit slim-mode scss-mode sass-mode pug-mode prettier-js impatient-mode simple-httpd helm-css-scss haml-mode emmet-mode counsel-css company-web web-completion-data add-node-modules-path company-lua lua-mode powershell bmx-mode yapfify stickyfunc-enhance sphinx-doc pytest pyenv-mode pydoc py-isort poetry pippel pipenv pyvenv pip-requirements nose lsp-python-ms lsp-pyright live-py-mode importmagic epc ctable concurrent helm-pydoc helm-cscope helm xcscope helm-core cython-mode company-anaconda blacken anaconda-mode pythonic wgrep vertico-repeat vertico-quick vertico-directory vertico orderless marginalia flyspell-correct-popup embark-consult embark consult-yasnippet consult helpful elisp-refs centaur-tabs vimrc-mode helm-gtags ggtags dactyl-mode counsel-gtags counsel swiper ivy dap-mode bui yasnippet-snippets yaml-mode xterm-color ws-butler writeroom-mode winum which-key vterm volatile-highlights vi-tilde-fringe uuidgen use-package unfill undo-tree treemacs-projectile treemacs-persp treemacs-magit treemacs-icons-dired treemacs-evil toc-org texfrag terminal-here symon symbol-overlay string-inflection string-edit spaceline-all-the-icons smeargle shell-pop restart-emacs rainbow-delimiters quickrun popwin pcre2el password-generator paradox overseer orgit-forge org-superstar org-roam org-rich-yank org-projectile org-present org-pomodoro org-mime org-download org-contrib org-cliplink open-junk-file nameless mwim multi-term multi-line mmm-mode markdown-toc macrostep lsp-ui lsp-treemacs lsp-origami lorem-ipsum link-hint inspector info+ indent-guide hybrid-mode hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers highlight-indentation helm-xref helm-themes helm-swoop helm-rtags helm-purpose helm-projectile helm-org-rifle helm-org helm-mode-manager helm-make helm-lsp helm-ls-git helm-git-grep helm-flx helm-descbinds helm-company helm-c-yasnippet helm-ag google-translate google-c-style golden-ratio gnuplot gitignore-templates git-timemachine git-modes git-messenger git-link git-gutter-fringe gh-md gendoxy fuzzy font-lock+ flyspell-correct-helm flycheck-ycmd flycheck-rtags flycheck-pos-tip flycheck-package flycheck-elsa flx-ido fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-textobj-line evil-surround evil-org evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-easymotion evil-collection evil-cleverparens evil-args evil-anzu eval-sexp-fu eshell-z eshell-prompt-extras esh-help emr elisp-slime-nav editorconfig dumb-jump drag-stuff dotenv-mode disaster dired-quick-sort diminish deft define-word cpp-auto-include company-ycmd company-rtags company-c-headers column-enforce-mode clean-aindent-mode centered-cursor-mode ccls browse-at-remote auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile aggressive-indent ace-link ace-jump-helm-line ac-ispell))
  '(recentf-mode t)
  '(recentf-mode-hook nil)
  '(tab-bar-mode t)
